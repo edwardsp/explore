@@ -2,7 +2,7 @@
 import unittest
 import core
 
-class CreateProject(unittest.TestCase):
+class ProjectTest(unittest.TestCase):
     def setUp(self):
         p = core.Project()
         p.add_parameter("var1", 10, (0, 100))
@@ -23,8 +23,8 @@ class CreateProject(unittest.TestCase):
         self.assertEquals(p.get_parameter_default_values(), [10, 20])
         self.assertEquals(p.get_parameter_ranges(), [(0,100), (10,88)])
         # setting an invalid default value
-        self.assertRaises(core.DefaultValueOutOfRange, 
-            self.Project.add_parameter, "var3", 0, (10,100)) 
+        self.assertRaises(core.DefaultValueOutOfRange,
+            self.Project.add_parameter, "var3", 0, (10,100))
         # make sure the invalid parameter doesn't get added
         self.assertEquals(len(self.Project.get_parameter_names()), 2)
 
@@ -50,7 +50,7 @@ class CreateProject(unittest.TestCase):
         p.from_json(data)
         data2 = p.to_json()
         self.assertEquals(data, data2)
-        
+
 
 if __name__ == "__main__":
     unittest.main()

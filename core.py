@@ -31,7 +31,7 @@ class Project:
 
     def add_parameter(self, name, default_value, range=(None, None)):
         self.Parameters.append(Parameter(name, default_value, range))
-    
+
     def get_parameter_names(self):
         return [ p.Name for p in self.Parameters ]
 
@@ -58,25 +58,22 @@ class Project:
 
     def from_json(self, json_str):
         data = json.loads(json_str)
-        self.Parameters = [ Parameter(p['Name'], p['Default'], p['Range']) 
+        self.Parameters = [ Parameter(p['Name'], p['Default'], p['Range'])
             for p in data['Parameters'] ]
-        self.Constraints = [ Constraint(c['Name'], c['Bounds']) 
+        self.Constraints = [ Constraint(c['Name'], c['Bounds'])
             for c in data['Constraints'] ]
         self.Objectives = [ Objective(o['Name']) for o in data['Objectives'] ]
 
     def to_json(self):
         return json.dumps({
-            'Parameters': [ 
-                { 'Name':p.Name, 'Default':p.Default, 'Range':p.Range } 
+            'Parameters': [
+                { 'Name':p.Name, 'Default':p.Default, 'Range':p.Range }
                     for p in self.Parameters ],
             'Constraints': [
-                { 'Name':c.Name, 'Bounds':c.Bounds } 
+                { 'Name':c.Name, 'Bounds':c.Bounds }
                     for c in self.Constraints ],
             'Objectives': [
                 { 'Name':p.Name } for o in self.Objectives ] })
 
     def open(self, filename):
         pass
-        
-
-# vi:ts=4:sw=4:expandtab:ft=python:
