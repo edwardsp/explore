@@ -22,8 +22,8 @@ class TestLatinHypercube(unittest.TestCase):
         params = self.Project.Parameters;
         for i in data:
             for p in range(len(params)):
-                self.assertTrue(i[p] >= params[p].Range[0])
-                self.assertTrue(i[p] <= params[p].Range[1])
+                self.assertTrue(i[p] >= params[p].Range[0], "Parameter " + str(p) + " less than range")
+                self.assertTrue(i[p] <= params[p].Range[1], "Parameter " + str(p) + " greater than range")
 
     def test_sample_distribution(self):
         lh = doe.LatinHypercube(self.Project)
@@ -37,7 +37,7 @@ class TestLatinHypercube(unittest.TestCase):
             for pdata in data:
                 hits[high.searchsorted(pdata[p])] += 1
             for i in hits:
-                self.assertTrue(i == 1)
+                self.assertTrue(i == 1, "Unevenly distributed values for parameter " + str(p))
 
 if __name__ == "__main__":
     unittest.main()

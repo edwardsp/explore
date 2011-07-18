@@ -5,6 +5,9 @@ import json
 class DefaultValueOutOfRange(exceptions.Exception):
     pass
 
+class Simulation:
+    pass
+
 class Parameter:
     def __init__(self,  name='NO-NAME',  default=0.0,  range=(None, None)):
         self.Name = name
@@ -28,6 +31,7 @@ class Project:
         self.Parameters	= []
         self.Constraints = []
         self.Objectives = []
+        self.Simulations = None
 
     def add_parameter(self, name, default_value, range=(None, None)):
         self.Parameters.append(Parameter(name, default_value, range))
@@ -55,6 +59,14 @@ class Project:
 
     def get_objective_names(self):
         return [ o.Name for o in self.Objectives ]
+
+    def set_simulation(self, simulation):
+        self.Simulation = simulation
+
+    def evaluate(self, x, *args):
+        if (self.Simulation == None):
+            raise exceptions.NotImplementedError()
+        return self.Simulation.eval(x, *args)
 
     def from_json(self, json_str):
         data = json.loads(json_str)
