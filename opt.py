@@ -10,9 +10,9 @@ class History:
         self.Best = None
         self.ParametersRun = {}
 
-    def add_experiment(self, params, cons, obj):
-        self.ParametersRun[tuple(params)] = [cons, obj]
-        self.Data.append(list(params) + list(cons) + list(obj))
+    def add_experiment(self, params, obj):
+        self.ParametersRun[tuple(params)] = obj
+        self.Data.append(list(params) + list(obj))
 
     def set_best(self, best):
         self.Best = best
@@ -32,12 +32,9 @@ class Optimiser:
     def eval(self, x, *args):
         result = self.History.find(x)
         if result == None:
-            cons, obj = self.Project.evaluate(x)
-            self.History.add_experiment(x, cons, obj)
-            result = obj[0]
-        else:
-            result = result[1][0]
-        return result
+            result = self.Project.evaluate(x)
+            self.History.add_experiment(x, result)
+        return result[0]
 
     def run(self):
         self.History = History(self.Project)

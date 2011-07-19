@@ -7,10 +7,10 @@ class ProjectTest(unittest.TestCase):
         p = core.Project()
         p.add_parameter("var1", 10, (0, 100))
         p.add_parameter("var2", 20, (10, 88))
-        p.add_constraint("con1", (0, 10))
-        p.add_constraint("con2", (None, 5))
         p.add_objective("obj1")
         p.add_objective("obj2")
+        p.add_objective("con1", (0, 10), 0.0)
+        p.add_objective("con2", (None, 5), 0.0)
         self.Project = p
 
     def tearDown(self):
@@ -28,15 +28,9 @@ class ProjectTest(unittest.TestCase):
         # make sure the invalid parameter doesn't get added
         self.assertEquals(len(self.Project.get_parameter_names()), 2)
 
-    def test_add_constraints(self):
-        p = self.Project
-        # order must be preserved
-        self.assertEquals(p.get_constraint_names(), ["con1", "con2"])
-        self.assertEquals(p.get_constraint_bounds(), [(0,10), (None,5)])
-
     def test_add_objectives(self):
         p = self.Project
-        self.assertEquals(p.get_objective_names(), ["obj1", "obj2"])
+        self.assertEquals(p.get_objective_names(), ["obj1", "obj2", "con1", "con2"])
 
     def test_read_and_write_project(self):
         data = self.Project.to_json()
