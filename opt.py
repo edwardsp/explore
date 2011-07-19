@@ -6,16 +6,23 @@ import scipy.optimize
 class History:
     def __init__(self, project):
         self.Project = project
-        self.Count = 0
         self.Data = []
         self.Best = None
+        self.ParametersRun = {}
 
-    def add_experiment(self, data):
-        self.Data.append([self.Count] + data)
-        self.Count += 1
+    def add_experiment(self, params, cons, obj):
+        self.ParametersRun[tuple(params)] = [cons, obj]
+        self.Data.append(list(params) + list(cons) + list(obj))
 
     def set_best(self, best):
         self.Best = best
+
+    def find(self, params):
+        p = tuple(params)
+        data = None
+        if p in self.ParametersRun:
+            data = self.ParametersRun[p]
+        return data
 
 class Optimiser:
     def set_project(self, project):
@@ -23,8 +30,13 @@ class Optimiser:
         self.History = None
 
     def eval(self, x, *args):
-        result = self.Project.evaluate(x, args)
-        self.History.add_experiment(x + [result])
+        result = self.History.find(x)
+        if result == None:
+            cons, obj = self.Project.evaluate(x)
+            self.History.add_experiment(x, cons, obj)
+            result = obj[0]
+        else:
+            result = result[1][0]
         return result
 
     def run(self):

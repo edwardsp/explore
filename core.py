@@ -66,7 +66,7 @@ class Project:
     def evaluate(self, x, *args):
         if (self.Simulation == None):
             raise exceptions.NotImplementedError()
-        return self.Simulation.eval(x, *args)
+        return self.Simulation.eval(x)
 
     def from_json(self, json_str):
         data = json.loads(json_str)
