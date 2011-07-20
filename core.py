@@ -48,6 +48,19 @@ class Project:
     def get_objective_names(self):
         return [ o.Name for o in self.Objectives ]
 
+    def get_objective_bounds(self):
+        return [ o.Bounds for o in self.Objectives ]
+
+    def get_objective_weights(self):
+        return [ o.Weight for o in self.Objectives ]
+
+    def has_constraints(self):
+        result = False
+        for o in self.Objectives:
+            if o.Bounds != (None, None):
+                result = True
+        return result
+
     def set_simulation(self, simulation):
         self.Simulation = simulation
 

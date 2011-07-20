@@ -1,6 +1,7 @@
 import core
 
 import exceptions
+import numpy
 import scipy.optimize
 
 class History:
@@ -29,12 +30,27 @@ class Optimiser:
         self.Project = project
         self.History = None
 
-    def eval(self, x, *args):
+    def eval(self, x):
         result = self.History.find(x)
         if result == None:
             result = self.Project.evaluate(x)
             self.History.add_experiment(x, result)
-        return result[0]
+        return result
+
+    def obj_func(self, x, *args):
+        obj = self.eval(x)
+        return sum(numpy.array(obj) * numpy.array(self.Project.get_objective_weights()))
+
+    def cons_func(self, x, *args):
+        result = []
+        obj = self.eval(x)
+        obj_bounds = self.Project.get_objective_bounds()
+        for i, b in enumerate(obj_bounds):
+            if b[0] != None:
+                result.append(obj[i] - b[0])
+            if b[1] != None:
+                result.append(-(obj[i] - b[1]))
+        return numpy.array(result)
 
     def run(self):
         self.History = History(self.Project)
@@ -50,5 +66,9 @@ class SLSQP(Optimiser):
         self.set_project(project)
 
     def optimise(self, start_values, bounds):
-        best = scipy.optimize.fmin_slsqp(self.eval, start_values, bounds=bounds, iprint=0)
+        best = []
+        if self.Project.has_constraints():
+            best = scipy.optimize.fmin_slsqp(self.obj_func, start_values, f_ieqcons=self.cons_func, bounds=bounds, iprint=0)
+        else:
+            best = scipy.optimize.fmin_slsqp(self.obj_func, start_values, bounds=bounds, iprint=0)
         return best

@@ -31,6 +31,9 @@ class ProjectTest(unittest.TestCase):
     def test_add_objectives(self):
         p = self.Project
         self.assertEquals(p.get_objective_names(), ["obj1", "obj2", "con1", "con2"])
+        self.assertEquals(p.get_objective_weights(), [1.0, 1.0, 0.0, 0.0])
+        self.assertEquals(p.get_objective_bounds(), [(None, None), (None, None), (0, 10), (None, 5)])
+        self.assertTrue(p.has_constraints())
 
     def test_read_and_write_project(self):
         data = self.Project.to_json()
