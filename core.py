@@ -5,7 +5,39 @@ import json
 class DefaultValueOutOfRange(exceptions.Exception):
     pass
 
+class History:
+    def __init__(self):
+        self.Data = []
+        self.Best = None
+        self.ParametersRun = {}
+
+    def add_experiment(self, params, obj):
+        self.ParametersRun[tuple(params)] = obj
+        self.Data.append(list(params) + list(obj))
+
+    def set_best(self, best):
+        self.Best = best
+
+    def find(self, params):
+        p = tuple(params)
+        data = None
+        if p in self.ParametersRun:
+            data = self.ParametersRun[p]
+        return data
+
 class Simulation:
+    def run_doe(self, data, hist=History()):
+        for params in data:
+            hist.add_experiment(params, self.evaluate(params, hist))
+        return hist
+
+    def evaluate(self, x, hist):
+        result = hist.find(x)
+        if result == None:
+            result = self.eval(x)
+            hist.add_experiment(x, result)
+        return result
+
     def eval(self, x):
         raise exceptions.NotImplementedException()
 
@@ -28,7 +60,6 @@ class Project:
     def __init__(self):
         self.Parameters	= []
         self.Objectives = []
-        self.Simulation = None
 
     def add_parameter(self, name, default_value, range=(None, None)):
         self.Parameters.append(Parameter(name, default_value, range))
@@ -60,14 +91,6 @@ class Project:
             if o.Bounds != (None, None):
                 result = True
         return result
-
-    def set_simulation(self, simulation):
-        self.Simulation = simulation
-
-    def evaluate(self, x):
-        if (self.Simulation == None):
-            raise exceptions.NotImplementedError()
-        return self.Simulation.eval(x)
 
     def from_json(self, json_str):
         data = json.loads(json_str)

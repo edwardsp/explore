@@ -1,6 +1,7 @@
-
-import unittest
 import core
+
+import numpy
+import unittest
 
 class ProjectTest(unittest.TestCase):
     def setUp(self):
@@ -48,6 +49,20 @@ class ProjectTest(unittest.TestCase):
         data2 = p.to_json()
         self.assertEquals(data, data2)
 
+    def test_run_doe(self):
+        class TestSim(core.Simulation):
+            def eval(self, x):
+                return [1.0, 2.0, 3.0, 4.0]
+
+        sim = TestSim()
+        data = [[1.0, 1.0, 1.0], [2.0, 2.0, 2.0], [3.0, 3.0, 3.0]]
+        hist = sim.run_doe(data)
+        self.assertEqual(len(data[0])+4, len(hist.Data[0]))
+        for e in hist.Data:
+            self.assertEqual(e[-1], 4.0)
+            self.assertEqual(e[-2], 3.0)
+            self.assertEqual(e[-3], 2.0)
+            self.assertEqual(e[-4], 1.0)
 
 if __name__ == "__main__":
     unittest.main()

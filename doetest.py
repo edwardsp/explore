@@ -39,5 +39,13 @@ class TestLatinHypercube(unittest.TestCase):
             for i in hits:
                 self.assertTrue(i == 1, "Unevenly distributed values for parameter " + str(p))
 
+    def test_deterministic_with_seed(self):
+        lh = doe.LatinHypercube(self.Project)
+        lh.set_seed(1337)
+        data1 = tuple(numpy.array(lh.generate(10)).flatten())
+        lh.set_seed(1337)
+        data2 = tuple(numpy.array(lh.generate(10)).flatten())
+        self.assertEqual(data1, data2)
+
 if __name__ == "__main__":
     unittest.main()
